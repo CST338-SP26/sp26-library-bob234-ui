@@ -1,6 +1,12 @@
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Name: Emiliano Gomez-Salgado
+ * Assignment: Project 01 Part 01/04: Book.java
+ */
+
+
 public class Book
 {
 
