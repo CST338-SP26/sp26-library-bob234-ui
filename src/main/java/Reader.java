@@ -3,6 +3,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Name: Emiliano Gomez-Salgado
+ * Assignment: Project 01 Part 02/04: Reader.java
+ */
+
 public class Reader {
 
     public static final int CARD_NUMBER_ = 0;
