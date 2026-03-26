@@ -4,14 +4,12 @@ import java.util.Objects;
 public class Book
 {
 
-
     public static final int ISBN_       = 0;
     public static final int TITLE_      = 1;
     public static final int SUBJECT_    = 2;
     public static final int PAGE_COUNT_ = 3;
     public static final int AUTHOR_     = 4;
     public static final int DUE_DATE_   = 5;
-
 
     private String    isbn;
     private String    title;
@@ -31,7 +29,7 @@ public class Book
         this.dueDate   = dueDate;
     }
 
-    public String getIsbn()
+    public String getISBN()
     {
         return isbn;
     }
@@ -61,7 +59,7 @@ public class Book
         return dueDate;
     }
 
-    public void setIsbn(String isbn)
+    public void setISBN(String isbn)
     {
         this.isbn = isbn;
     }
@@ -91,7 +89,6 @@ public class Book
         this.dueDate = dueDate;
     }
 
-
     @Override
     public boolean equals(Object o)
     {
@@ -105,13 +102,11 @@ public class Book
                 Objects.equals(author,  book.author);
     }
 
-
     @Override
     public int hashCode()
     {
         return Objects.hash(isbn, title, subject, pageCount, author);
     }
-
 
     @Override
     public String toString()
