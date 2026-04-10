@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
  * This test was written by an excellent student.
  *
  */
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class BookTest {
     Book book;
     Book book1;
