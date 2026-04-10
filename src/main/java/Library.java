@@ -5,37 +5,19 @@ import java.time.LocalDate;
 import java.util.*;
 
 /**
- * Represents a library that manages books, shelves, and readers.
- * Handles initialization from a CSV file and all library operations.
- *
- * @author Emiliano Gomez
- * @version 1.4.3
+ * Name: Emiliano Gomez-Salgado
+ * Assignment: Project 01 Part 04/04: Library.java
  */
 public class Library {
 
-    // Maximum number of books a reader can check out at once
+
     public static final int LENDING_LIMIT = 5;
-
-    // Name of the library
     private String name;
-
-    // Current maximum library card number (static, shared across all instances)
     private static int libraryCard = 0;
-
-    // List of readers registered to the library
     private List<Reader> readers;
-
-    // HashMap of shelves keyed by subject
     private HashMap<String, Shelf> shelves;
-
-    // HashMap of books and their copy counts
     private HashMap<Book, Integer> books;
 
-    /**
-     * Constructs a Library with the given name.
-     *
-     * @param name the name of the library
-     */
     public Library(String name) {
         this.name = name;
         this.readers = new ArrayList<>();
@@ -43,26 +25,8 @@ public class Library {
         this.books = new HashMap<>();
     }
 
-    // -------------------------------------------------------------------------
-    // Getters
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the name of the library.
-     * @return the library name
-     */
     public String getName() { return name; }
 
-    // -------------------------------------------------------------------------
-    // init
-    // -------------------------------------------------------------------------
-
-    /**
-     * Parses the given CSV file to initialize books, shelves, and readers.
-     *
-     * @param filename the name of the CSV file to parse
-     * @return SUCCESS if parsed correctly, or an error Code
-     */
     public Code init(String filename) {
         Scanner scan;
         try {
@@ -71,7 +35,6 @@ public class Library {
             return Code.FILE_NOT_FOUND_ERROR;
         }
 
-        // Parse books
         int bookCount = convertInt(scan.nextLine().trim(), Code.BOOK_COUNT_ERROR);
         if (bookCount < 0) {
             return errorCode(bookCount);
@@ -80,7 +43,6 @@ public class Library {
         if (result != Code.SUCCESS) return result;
         listBooks();
 
-        // Parse shelves
         int shelfCount = convertInt(scan.nextLine().trim(), Code.SHELF_COUNT_ERROR);
         if (shelfCount < 0) {
             return errorCode(shelfCount);
@@ -89,7 +51,6 @@ public class Library {
         if (result != Code.SUCCESS) return result;
         listShelves();
 
-        // Parse readers
         int readerCount = convertInt(scan.nextLine().trim(), Code.READER_COUNT_ERROR);
         if (readerCount < 0) {
             return errorCode(readerCount);
@@ -101,17 +62,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // initBooks
-    // -------------------------------------------------------------------------
-
-    /**
-     * Parses books from the scanner and adds them to the library.
-     *
-     * @param bookCount number of books to parse
-     * @param scan      scanner positioned at the first book record
-     * @return SUCCESS or an error Code
-     */
     private Code initBooks(int bookCount, Scanner scan) {
         if (bookCount < 1) return Code.LIBRARY_ERROR;
 
@@ -139,17 +89,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // initShelves
-    // -------------------------------------------------------------------------
-
-    /**
-     * Parses shelves from the scanner and adds them to the library.
-     *
-     * @param shelfCount number of shelves to parse
-     * @param scan       scanner positioned at the first shelf record
-     * @return SUCCESS or an error Code
-     */
     private Code initShelves(int shelfCount, Scanner scan) {
         if (shelfCount < 1) return Code.SHELF_COUNT_ERROR;
 
@@ -171,17 +110,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // initReader
-    // -------------------------------------------------------------------------
-
-    /**
-     * Parses readers from the scanner and adds them to the library.
-     *
-     * @param readerCount number of readers to parse
-     * @param scan        scanner positioned at the first reader record
-     * @return SUCCESS or an error Code
-     */
     private Code initReader(int readerCount, Scanner scan) {
         if (readerCount <= 0) return Code.READER_COUNT_ERROR;
 
@@ -197,7 +125,6 @@ public class Library {
             Reader reader = new Reader(cardNum, rName, phone);
             addReader(reader);
 
-            // Parse books the reader has checked out
             for (int j = 0; j < bookCount; j++) {
                 int isbnIndex = Reader.BOOK_START_ + (j * 2);
                 int dateIndex = isbnIndex + 1;
@@ -219,17 +146,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // addBook
-    // -------------------------------------------------------------------------
-
-    /**
-     * Adds a book to the library's HashMap. If already present, increments count.
-     * Also adds the book to the appropriate shelf if one exists.
-     *
-     * @param newBook the book to add
-     * @return SUCCESS or SHELF_EXISTS_ERROR if no matching shelf
-     */
     public Code addBook(Book newBook) {
         if (books.containsKey(newBook)) {
             int count = books.get(newBook) + 1;
@@ -240,7 +156,6 @@ public class Library {
             System.out.println(newBook.getTitle() + " added to the stacks.");
         }
 
-        // Add to matching shelf if available
         if (shelves.containsKey(newBook.getSubject())) {
             shelves.get(newBook.getSubject()).addBook(newBook);
             return Code.SUCCESS;
@@ -250,17 +165,6 @@ public class Library {
         return Code.SHELF_EXISTS_ERROR;
     }
 
-    // -------------------------------------------------------------------------
-    // returnBook (Reader, Book)
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns a book from a reader back to the library.
-     *
-     * @param reader the reader returning the book
-     * @param book   the book being returned
-     * @return SUCCESS or an error Code
-     */
     public Code returnBook(Reader reader, Book book) {
         if (!reader.hasBook(book)) {
             System.out.println(reader.getName() + " doesn't have " + book.getTitle() + " checked out");
@@ -282,16 +186,6 @@ public class Library {
         return result;
     }
 
-    // -------------------------------------------------------------------------
-    // returnBook (Book)
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns a book to its shelf.
-     *
-     * @param book the book to return to the shelf
-     * @return SUCCESS or SHELF_EXISTS_ERROR if no matching shelf
-     */
     public Code returnBook(Book book) {
         if (!shelves.containsKey(book.getSubject())) {
             System.out.println("No shelf for " + book);
@@ -300,18 +194,6 @@ public class Library {
         return shelves.get(book.getSubject()).addBook(book);
     }
 
-    // -------------------------------------------------------------------------
-    // addBookToShelf (deprecated)
-    // -------------------------------------------------------------------------
-
-    /**
-     * Adds a book to a specific shelf.
-     * @deprecated since version 1.4.0
-     *
-     * @param book  the book to add
-     * @param shelf the shelf to add it to
-     * @return SUCCESS or an error Code
-     */
     @Deprecated
     private Code addBookToShelf(Book book, Shelf shelf) {
         if (returnBook(book) == Code.SUCCESS) return Code.SUCCESS;
@@ -330,15 +212,6 @@ public class Library {
         return result;
     }
 
-    // -------------------------------------------------------------------------
-    // listBooks
-    // -------------------------------------------------------------------------
-
-    /**
-     * Lists all books in the library and returns the total count.
-     *
-     * @return total number of book copies in the library
-     */
     public int listBooks() {
         int total = 0;
         for (Map.Entry<Book, Integer> entry : books.entrySet()) {
@@ -348,17 +221,6 @@ public class Library {
         return total;
     }
 
-    // -------------------------------------------------------------------------
-    // checkoutBook
-    // -------------------------------------------------------------------------
-
-    /**
-     * Checks out a book to a reader.
-     *
-     * @param reader the reader checking out the book
-     * @param book   the book to check out
-     * @return SUCCESS or an error Code
-     */
     public Code checkoutBook(Reader reader, Book book) {
         if (!readers.contains(reader)) {
             System.out.println(reader.getName() + " doesn't have an account here");
@@ -399,16 +261,6 @@ public class Library {
         return removeResult;
     }
 
-    // -------------------------------------------------------------------------
-    // getBookByISBN
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the Book with the matching ISBN, or null if not found.
-     *
-     * @param isbn the ISBN to search for
-     * @return the matching Book, or null
-     */
     public Book getBookByISBN(String isbn) {
         for (Book book : books.keySet()) {
             if (book.getISBN().equals(isbn)) {
@@ -419,25 +271,11 @@ public class Library {
         return null;
     }
 
-    // -------------------------------------------------------------------------
-    // listShelves
-    // -------------------------------------------------------------------------
 
-    /**
-     * Lists all shelves without showing books.
-     *
-     * @return number of shelves
-     */
     public int listShelves() {
         return listShelves(false);
     }
 
-    /**
-     * Lists all shelves, optionally showing their books.
-     *
-     * @param showBooks if true, lists books on each shelf
-     * @return number of shelves
-     */
     public int listShelves(boolean showBooks) {
         for (Shelf shelf : shelves.values()) {
             if (showBooks) {
@@ -449,34 +287,17 @@ public class Library {
         return shelves.size();
     }
 
-    // -------------------------------------------------------------------------
-    // addShelf
-    // -------------------------------------------------------------------------
-
-    /**
-     * Creates a new shelf with the given subject and adds it to the library.
-     *
-     * @param shelfSubject the subject of the new shelf
-     * @return SUCCESS or an error Code
-     */
     public Code addShelf(String shelfSubject) {
         int nextNumber = shelves.size() + 1;
         return addShelf(new Shelf(nextNumber, shelfSubject));
     }
 
-    /**
-     * Adds a shelf to the library's HashMap of shelves.
-     *
-     * @param shelf the shelf to add
-     * @return SUCCESS or SHELF_EXISTS_ERROR if already exists
-     */
     public Code addShelf(Shelf shelf) {
         if (shelves.containsKey(shelf.getSubject())) {
             System.out.println("ERROR: Shelf already exists " + shelf);
             return Code.SHELF_EXISTS_ERROR;
         }
 
-        // Assign shelf number as largest current + 1
         int maxNum = 0;
         for (Shelf s : shelves.values()) {
             if (s.getShelfNumber() > maxNum) maxNum = s.getShelfNumber();
@@ -484,7 +305,6 @@ public class Library {
         shelf.setShelfNumber(maxNum + 1);
         shelves.put(shelf.getSubject(), shelf);
 
-        // Add all matching books to the new shelf
         for (Map.Entry<Book, Integer> entry : books.entrySet()) {
             if (entry.getKey().getSubject().equals(shelf.getSubject())) {
                 for (int i = 0; i < entry.getValue(); i++) {
@@ -495,16 +315,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // getShelf
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the shelf with the matching shelf number.
-     *
-     * @param shelfNumber the shelf number to look up
-     * @return the matching Shelf, or null
-     */
     public Shelf getShelf(Integer shelfNumber) {
         for (Shelf shelf : shelves.values()) {
             if (shelf.getShelfNumber() == shelfNumber) {
@@ -515,12 +325,6 @@ public class Library {
         return null;
     }
 
-    /**
-     * Returns the shelf with the matching subject.
-     *
-     * @param subject the subject to look up
-     * @return the matching Shelf, or null
-     */
     public Shelf getShelf(String subject) {
         if (shelves.containsKey(subject)) {
             return shelves.get(subject);
@@ -529,15 +333,6 @@ public class Library {
         return null;
     }
 
-    // -------------------------------------------------------------------------
-    // listReaders
-    // -------------------------------------------------------------------------
-
-    /**
-     * Lists all readers and returns the total count.
-     *
-     * @return number of readers
-     */
     public int listReaders() {
         for (Reader reader : readers) {
             System.out.println(reader);
@@ -545,12 +340,6 @@ public class Library {
         return readers.size();
     }
 
-    /**
-     * Lists all readers, optionally showing their checked-out books.
-     *
-     * @param showBooks if true, shows each reader's books
-     * @return number of readers
-     */
     public int listReaders(boolean showBooks) {
         if (showBooks) {
             for (Reader reader : readers) {
@@ -565,16 +354,6 @@ public class Library {
         return readers.size();
     }
 
-    // -------------------------------------------------------------------------
-    // getReaderByCard
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the reader with the given library card number.
-     *
-     * @param cardNumber the card number to search for
-     * @return the matching Reader, or null
-     */
     public Reader getReaderByCard(int cardNumber) {
         for (Reader reader : readers) {
             if (reader.getCardNumber() == cardNumber) {
@@ -585,16 +364,6 @@ public class Library {
         return null;
     }
 
-    // -------------------------------------------------------------------------
-    // addReader
-    // -------------------------------------------------------------------------
-
-    /**
-     * Adds a reader to the library.
-     *
-     * @param reader the reader to add
-     * @return SUCCESS or an error Code
-     */
     public Code addReader(Reader reader) {
         if (readers.contains(reader)) {
             System.out.println(reader.getName() + " already has an account!");
@@ -617,16 +386,6 @@ public class Library {
         return Code.SUCCESS;
     }
 
-    // -------------------------------------------------------------------------
-    // removeReader
-    // -------------------------------------------------------------------------
-
-    /**
-     * Removes a reader from the library if they have no checked-out books.
-     *
-     * @param reader the reader to remove
-     * @return SUCCESS or an error Code
-     */
     public Code removeReader(Reader reader) {
         if (readers.contains(reader)) {
             if (reader.getBookCount() > 0) {
@@ -641,17 +400,6 @@ public class Library {
         return Code.READER_NOT_IN_LIBRARY_ERROR;
     }
 
-    // -------------------------------------------------------------------------
-    // convertInt
-    // -------------------------------------------------------------------------
-
-    /**
-     * Converts a String to an integer. Prints error messages on failure.
-     *
-     * @param recordCountString the string to convert
-     * @param code              the Code context for error messaging
-     * @return the parsed integer, or the negative error code on failure
-     */
     public static int convertInt(String recordCountString, Code code) {
         try {
             return Integer.parseInt(recordCountString);
@@ -677,18 +425,6 @@ public class Library {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // convertDate
-    // -------------------------------------------------------------------------
-
-    /**
-     * Converts a date string in "yyyy-mm-dd" format to a LocalDate.
-     * Returns 01-Jan-1970 as a default on any parse error.
-     *
-     * @param date      the date string to parse
-     * @param errorCode the Code context for error messaging
-     * @return the parsed LocalDate, or 01-Jan-1970 on failure
-     */
     public static LocalDate convertDate(String date, Code errorCode) {
         if (date.equals("0000")) {
             return LocalDate.of(1970, 1, 1);
@@ -716,29 +452,10 @@ public class Library {
         return LocalDate.of(year, month, day);
     }
 
-    // -------------------------------------------------------------------------
-    // getLibraryCardNumber
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the next available library card number.
-     *
-     * @return libraryCard + 1
-     */
     public static int getLibraryCardNumber() {
         return libraryCard + 1;
     }
 
-    // -------------------------------------------------------------------------
-    // errorCode
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the Code matching the given code number, or UNKNOWN_ERROR.
-     *
-     * @param codeNumber the integer code to look up
-     * @return the matching Code enum value
-     */
     private Code errorCode(int codeNumber) {
         for (Code code : Code.values()) {
             if (code.getCode() == codeNumber) {
